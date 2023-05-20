@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-
 class App extends StatelessWidget {
   const App({
     Key? key,
@@ -29,6 +28,9 @@ class AppView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return const MaterialApp(
+        home: Scaffold(
+      body: Center(child: Text('test')),
+    ));
   }
 }

@@ -10,44 +10,43 @@ import 'dart:async' as $async;
 import 'dart:core' as $core;
 
 import 'package:grpc/service_api.dart' as $grpc;
-import 'time_series_generator.pb.dart' as $0;
+import 'package:time_series_generator_api/generated/time_series_generator.pb.dart' as $0;
 export 'time_series_generator.pb.dart';
 
 class TimeSeriesGeneratorClient extends $grpc.Client {
+
+  TimeSeriesGeneratorClient($grpc.ClientChannel channel,
+      {$grpc.CallOptions? options,
+      $core.Iterable<$grpc.ClientInterceptor>? interceptors,})
+      : super(channel, options: options, interceptors: interceptors);
   static final _$publishTimeSeries =
       $grpc.ClientMethod<$0.TimeSeriesConfig, $0.PublishResponse>(
           '/timeseries.TimeSeriesGenerator/PublishTimeSeries',
           ($0.TimeSeriesConfig value) => value.writeToBuffer(),
           ($core.List<$core.int> value) =>
-              $0.PublishResponse.fromBuffer(value));
+              $0.PublishResponse.fromBuffer(value),);
   static final _$subscribeToTimeSeries =
       $grpc.ClientMethod<$0.Empty, $0.TimeSeriesData>(
           '/timeseries.TimeSeriesGenerator/SubscribeToTimeSeries',
           ($0.Empty value) => value.writeToBuffer(),
-          ($core.List<$core.int> value) => $0.TimeSeriesData.fromBuffer(value));
-
-  TimeSeriesGeneratorClient($grpc.ClientChannel channel,
-      {$grpc.CallOptions? options,
-      $core.Iterable<$grpc.ClientInterceptor>? interceptors})
-      : super(channel, options: options, interceptors: interceptors);
+          ($core.List<$core.int> value) => $0.TimeSeriesData.fromBuffer(value),);
 
   $grpc.ResponseFuture<$0.PublishResponse> publishTimeSeries(
       $0.TimeSeriesConfig request,
-      {$grpc.CallOptions? options}) {
+      {$grpc.CallOptions? options,}) {
     return $createUnaryCall(_$publishTimeSeries, request, options: options);
   }
 
   $grpc.ResponseStream<$0.TimeSeriesData> subscribeToTimeSeries(
       $0.Empty request,
-      {$grpc.CallOptions? options}) {
+      {$grpc.CallOptions? options,}) {
     return $createStreamingCall(
         _$subscribeToTimeSeries, $async.Stream.fromIterable([request]),
-        options: options);
+        options: options,);
   }
 }
 
 abstract class TimeSeriesGeneratorServiceBase extends $grpc.Service {
-  $core.String get $name => 'timeseries.TimeSeriesGenerator';
 
   TimeSeriesGeneratorServiceBase() {
     $addMethod($grpc.ServiceMethod<$0.TimeSeriesConfig, $0.PublishResponse>(
@@ -56,29 +55,30 @@ abstract class TimeSeriesGeneratorServiceBase extends $grpc.Service {
         false,
         false,
         ($core.List<$core.int> value) => $0.TimeSeriesConfig.fromBuffer(value),
-        ($0.PublishResponse value) => value.writeToBuffer()));
+        ($0.PublishResponse value) => value.writeToBuffer(),),);
     $addMethod($grpc.ServiceMethod<$0.Empty, $0.TimeSeriesData>(
         'SubscribeToTimeSeries',
         subscribeToTimeSeries_Pre,
         false,
         true,
         ($core.List<$core.int> value) => $0.Empty.fromBuffer(value),
-        ($0.TimeSeriesData value) => value.writeToBuffer()));
+        ($0.TimeSeriesData value) => value.writeToBuffer(),),);
   }
+  $core.String get $name => 'timeseries.TimeSeriesGenerator';
 
   $async.Future<$0.PublishResponse> publishTimeSeries_Pre(
       $grpc.ServiceCall call,
-      $async.Future<$0.TimeSeriesConfig> request) async {
+      $async.Future<$0.TimeSeriesConfig> request,) async {
     return publishTimeSeries(call, await request);
   }
 
   $async.Stream<$0.TimeSeriesData> subscribeToTimeSeries_Pre(
-      $grpc.ServiceCall call, $async.Future<$0.Empty> request) async* {
+      $grpc.ServiceCall call, $async.Future<$0.Empty> request,) async* {
     yield* subscribeToTimeSeries(call, await request);
   }
 
   $async.Future<$0.PublishResponse> publishTimeSeries(
-      $grpc.ServiceCall call, $0.TimeSeriesConfig request);
+      $grpc.ServiceCall call, $0.TimeSeriesConfig request,);
   $async.Stream<$0.TimeSeriesData> subscribeToTimeSeries(
-      $grpc.ServiceCall call, $0.Empty request);
+      $grpc.ServiceCall call, $0.Empty request,);
 }

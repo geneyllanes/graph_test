@@ -1,17 +1,45 @@
+import 'dart:async';
+import 'dart:developer';
+
+import 'package:acoustics_repository/acoustics_repository.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graph_test/bootstrap.dart';
 import 'package:time_series_generator_api/generated/time_series_generator.dart';
 import 'package:grpc/grpc.dart' as grpc;
 import 'package:time_series_generator_api/time_series_generator_api.dart';
 
+import 'app/app.dart';
+
 void main() {
-  final channel = grpc.ClientChannel('localhost',
+  grpc.ClientChannel? channel;
+  TimeSeriesGeneratorClient? client;
+  TimeSeriesGeneratorApi? generatorApi;
+  AcousticsRepository? acousticsRepository;
+
+  try {
+    channel = grpc.ClientChannel(
+      'localhost',
       port: 8080,
       options: const grpc.ChannelOptions(
-          credentials: grpc.ChannelCredentials.insecure()));
+        credentials: grpc.ChannelCredentials.insecure(),
+      ),
+    );
 
-  final client = TimeSeriesGeneratorClient(channel);
+    client = TimeSeriesGeneratorClient(channel);
+    generatorApi = TimeSeriesGeneratorApi(client: client);
+    acousticsRepository = AcousticsRepository(generatorApi: generatorApi);
 
-  final timeSeriesGeneratorApi = TimeSeriesGeneratorApi(client: client);
+    Bloc.observer = const AppBlocObserver();
 
-  return bootstrap(timeSeriesGeneratorApi: timeSeriesGeneratorApi);
+    runApp(
+      App(
+        acousticsRepository: acousticsRepository,
+      ),
+    );
+  } catch (error, stackTrace) {
+    log(error.toString(), stackTrace: stackTrace);
+  } finally {
+    channel?.shutdown();
+  }
 }

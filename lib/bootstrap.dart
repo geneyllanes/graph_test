@@ -44,7 +44,7 @@ class AppBlocObserver extends BlocObserver {
 }
 
 void bootstrap({
-  required TimeSeriesGeneratorApi timeSeriesGeneratorApi,
+  required TimeSeriesGeneratorApi generatorApi,
 }) {
   FlutterError.onError = (details) {
     log(details.exceptionAsString(), stackTrace: details.stack);
@@ -52,7 +52,7 @@ void bootstrap({
 
   Bloc.observer = const AppBlocObserver();
 
-  final acousticsRepository = AcousticsRepository(timeSeriesGeneratorApi: timeSeriesGeneratorApi);
+  final acousticsRepository = AcousticsRepository(generatorApi: generatorApi);
 
   runZonedGuarded(
     () => runApp(

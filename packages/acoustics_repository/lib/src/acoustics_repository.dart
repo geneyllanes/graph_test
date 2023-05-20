@@ -6,10 +6,10 @@ import 'package:time_series_generator_api/time_series_generator_api.dart';
 class AcousticsRepository {
   /// {@macro acoustics_repo}
   const AcousticsRepository({
-    required TimeSeriesGeneratorApi timeSeriesGeneratorApi,
-  }) : _timeSeriesGeneratorApi = timeSeriesGeneratorApi;
+    required TimeSeriesGeneratorApi generatorApi,
+  }) : _generatorApi = generatorApi;
 
-  final TimeSeriesGeneratorApi _timeSeriesGeneratorApi;
+  final TimeSeriesGeneratorApi _generatorApi;
 
   //publish
   //subscribe
