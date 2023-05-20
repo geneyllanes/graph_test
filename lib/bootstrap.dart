@@ -44,7 +44,6 @@ class AppBlocObserver extends BlocObserver {
 }
 
 void bootstrap({
-  required AcousticsRepository acousticsRepository,
   required TimeSeriesGeneratorApi timeSeriesGeneratorApi,
 }) {
   FlutterError.onError = (details) {

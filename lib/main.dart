@@ -1,60 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:graph_test/chart.dart';
+import 'package:graph_test/bootstrap.dart';
+import 'package:time_series_generator_api/generated/time_series_generator.dart';
+import 'package:grpc/grpc.dart' as grpc;
+import 'package:time_series_generator_api/time_series_generator_api.dart';
 
 void main() {
-  runApp(const MyApp());
-}
+  final channel = grpc.ClientChannel('localhost',
+      port: 8080,
+      options: const grpc.ChannelOptions(
+          credentials: grpc.ChannelCredentials.insecure()));
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final client = TimeSeriesGeneratorClient(channel);
 
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
+  final timeSeriesGeneratorApi = TimeSeriesGeneratorApi(client: client);
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Chart(),
-          ],
-        ),
-      ),
-    );
-  }
+  return bootstrap(timeSeriesGeneratorApi: timeSeriesGeneratorApi);
 }
