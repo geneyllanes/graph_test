@@ -12,12 +12,13 @@ class TimeSeriesGeneratorApi {
   final TimeSeriesGeneratorClient _client;
 
   /// Function for publishing to the server
-  Future<PublishResponse> publishTones(TimeSeriesConfig publishRequest) async {
+  Future<PublishResponse> publish(TimeSeriesConfig publishRequest) async {
     final publishResponse = await _client.publishTimeSeries(publishRequest);
     return publishResponse;
   }
 
-  Stream<TimeSeriesData> subscribe(TimeSeriesConfig publishConfig) {
+  /// function for subscribing to the server
+  Stream<TimeSeriesData> subscribe() {
     return _client.subscribeToTimeSeries(Empty());
   }
 }
