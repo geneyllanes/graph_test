@@ -18,7 +18,8 @@ class TimeSeriesGeneratorApi {
   }
 
   /// function for subscribing to the server
-  Stream<TimeSeriesData> subscribe() {
-    return _client.subscribeToTimeSeries(Empty());
+  Stream<BatchedData> subscribe() {
+      final subscribeRequest = Empty();
+    return _client.subscribeToTimeSeries(subscribeRequest);
   }
 }

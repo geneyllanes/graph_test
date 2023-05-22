@@ -1,6 +1,24 @@
 part of 'tone_overview_bloc.dart';
 
-@immutable
-abstract class ToneOverviewState {}
+class ToneOverviewState extends Equatable {
+  const ToneOverviewState({
+    this.combinedTone,
+    this.tones,
+  });
 
-class ToneOverviewInitial extends ToneOverviewState {}
+  final BatchedData? combinedTone;
+  final List<ToneConfig>? tones;
+
+  @override
+  List<Object?> get props => [combinedTone, tones];
+
+  ToneOverviewState copyWith({
+    BatchedData? combinedTone,
+    List<ToneConfig>? tones,
+  }) {
+    return ToneOverviewState(
+      combinedTone: combinedTone ?? this.combinedTone,
+      tones: tones ?? this.tones,
+    );
+  }
+}

@@ -1,4 +1,10 @@
 part of 'tone_overview_bloc.dart';
 
-@immutable
-abstract class ToneOverviewEvent {}
+abstract class ToneOverviewEvent extends Equatable {
+  const ToneOverviewEvent();
+
+  @override
+  List<Object?> get props => [];
+}
+
+class ToneOverviewSubscriptionRequested extends ToneOverviewEvent {}

@@ -13,7 +13,7 @@ class AcousticsRepository {
   final TimeSeriesGeneratorApi _generatorApi;
 
   /// Get a stream of time series data
-  Stream<TimeSeriesData> getFinalTone() => _generatorApi.subscribe();
+  Stream<BatchedData> getCombinedTone() => _generatorApi.subscribe();
 
   /// publish tones for the generator
 
