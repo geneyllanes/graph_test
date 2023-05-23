@@ -2,6 +2,7 @@ import 'package:acoustics_repository/acoustics_repository.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:graph_test/heart_rate/heart_rate.dart';
 import 'package:graph_test/tone_overview/view/tone_overview.dart';
 
 class App extends StatelessWidget {
@@ -31,12 +32,7 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
         home: Scaffold(
-      body: Column(
-        children: [
-          ToneOverview(),
-          Center(child: Text('test')),
-        ],
-      ),
+      body: HeartRate(),
     ));
   }
 }

@@ -13,7 +13,10 @@ class AcousticsRepository {
   final TimeSeriesGeneratorApi _generatorApi;
 
   /// Get a stream of time series data
-  Stream<BatchedData> getCombinedTone() => _generatorApi.subscribe();
+  Stream<BatchedData> getCombinedTone() {
+    print('get combined Tone');
+    return _generatorApi.subscribe();
+  }
 
   /// publish tones for the generator
 
@@ -28,5 +31,10 @@ class AcousticsRepository {
     final response = await _generatorApi.publish(publishRequest);
 
     print(response.message);
+  }
+
+  // just for testing
+  Stream<List<int>> getHeartRateStream() {
+    return _generatorApi.generateHeartRateStream(70, 120000000);
   }
 }

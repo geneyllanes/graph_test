@@ -18,28 +18,20 @@ void main() {
   TimeSeriesGeneratorApi? generatorApi;
   AcousticsRepository? acousticsRepository;
 
-  try {
-    channel = grpc.ClientChannel(
-      '192.168.0.100',
+  channel = grpc.ClientChannel('192.168.0.100',
       port: 8080,
-      options: const grpc.ChannelOptions(credentials: grpc.ChannelCredentials.insecure()),
-    );
+      options: const grpc.ChannelOptions(
+          credentials: grpc.ChannelCredentials.insecure()));
 
-    client = TimeSeriesGeneratorClient(channel);
-    generatorApi = TimeSeriesGeneratorApi(client: client);
-    acousticsRepository = AcousticsRepository(generatorApi: generatorApi);
+  client = TimeSeriesGeneratorClient(channel);
+  generatorApi = TimeSeriesGeneratorApi(client: client);
+  acousticsRepository = AcousticsRepository(generatorApi: generatorApi);
 
-    Bloc.observer = const AppBlocObserver();
+  Bloc.observer = const AppBlocObserver();
 
-    runApp(
-      App(
-        acousticsRepository: acousticsRepository,
-      ),
-    );
-  } catch (error, stackTrace) {
-    log(error.toString(), stackTrace: stackTrace);
-  } finally {
-    channel?.shutdown();
-  }
+  runApp(
+    App(
+      acousticsRepository: acousticsRepository,
+    ),
+  );
 }
-

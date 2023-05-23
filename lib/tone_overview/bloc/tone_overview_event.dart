@@ -8,3 +8,14 @@ abstract class ToneOverviewEvent extends Equatable {
 }
 
 class ToneOverviewSubscriptionRequested extends ToneOverviewEvent {}
+
+class StartHeartRate extends ToneOverviewEvent {}
+
+class HeartRatePoint extends ToneOverviewEvent {
+  final List<int> point;
+
+  const HeartRatePoint(this.point);
+
+  @override
+  List<Object> get props => [point];
+}

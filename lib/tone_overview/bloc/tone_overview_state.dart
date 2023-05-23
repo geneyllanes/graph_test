@@ -2,7 +2,7 @@ part of 'tone_overview_bloc.dart';
 
 class ToneOverviewState extends Equatable {
   const ToneOverviewState({
-    this.combinedTone,
+    required this.combinedTone,
     this.tones,
   });
 

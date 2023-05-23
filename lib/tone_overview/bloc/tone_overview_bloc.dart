@@ -10,28 +10,41 @@ class ToneOverviewBloc extends Bloc<ToneOverviewEvent, ToneOverviewState> {
   ToneOverviewBloc({
     required AcousticsRepository acousticsRepository,
   })  : _acousticsRepository = acousticsRepository,
-        super(const ToneOverviewState()) {
+        super(ToneOverviewState(
+            combinedTone: BatchedData(xValues: [], yValues: []))) {
     on<ToneOverviewSubscriptionRequested>(_onSubscriptionRequested);
   }
   final AcousticsRepository _acousticsRepository;
 
-  /// maxDataPoints represents the maximum number of data points you want
-  ///  to keep in the list. After adding the new data point to the updated list,
-  /// it checks if the length of the list exceeds the maximum limit. If it does,
-  /// the sublist method is used to keep only the most recent maxDataPoints
-  /// elements in the list, discarding the older ones.
+  BatchedData downSample(int targetPoints, BatchedData data) {
+    if (data.xValues.length <= targetPoints) {
+      return data; // No downsampling needed
+    }
+
+    final List<double> downsampledXValues = [];
+    final List<double> downsampledYValues = [];
+
+    final double stepSize = data.xValues.length / targetPoints.toDouble();
+    double currentIndex = 0.0;
+
+    for (int i = 0; i < targetPoints; i++) {
+      final int index = currentIndex.floor();
+      downsampledXValues.add(data.xValues[index]);
+      downsampledYValues.add(data.yValues[index]);
+      currentIndex += stepSize;
+    }
+
+    return BatchedData(
+        xValues: downsampledXValues, yValues: downsampledYValues);
+  }
+
   Future<void> _onSubscriptionRequested(ToneOverviewSubscriptionRequested event,
       Emitter<ToneOverviewState> emit) async {
-
     await emit.forEach<BatchedData>(_acousticsRepository.getCombinedTone(),
         onData: (data) {
-      // List<BatchedData> updated = [...state.combinedTone.!, data];
+      final output = downSample(100, data);
 
-      // if (updated.length > maxDataPoints) {
-      //   updated = updated.sublist(updated.length - maxDataPoints);
-      // }
-
-      return state.copyWith();
+      return state.copyWith(combinedTone: data);
     });
   }
 }
