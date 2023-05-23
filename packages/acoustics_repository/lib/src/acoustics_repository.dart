@@ -34,7 +34,7 @@ class AcousticsRepository {
   }
 
   // just for testing
-  Stream<List<int>> getHeartRateStream() {
+  Stream<List<double>> getHeartRateStream() {
     return _generatorApi.generateHeartRateStream(70, 120000000);
   }
 }

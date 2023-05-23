@@ -28,7 +28,7 @@ class TimeSeriesGeneratorApi {
     return subscription.map((event) => event);
   }
 
-  Stream<List<int>> generateHeartRateStream(
+  Stream<List<double>> generateHeartRateStream(
     int heartRate,
     int duration,
   ) async* {
@@ -49,7 +49,7 @@ class TimeSeriesGeneratorApi {
       // Generate the heart rate signal using the instantaneous frequency
       final heartRateWithVariation = instantaneousFrequency * 60;
 
-      yield [x[i], heartRateWithVariation.round()];
+      yield [x[i].toDouble(), heartRateWithVariation];
       await Future.delayed(const Duration(milliseconds: 40), () {});
     }
   }
