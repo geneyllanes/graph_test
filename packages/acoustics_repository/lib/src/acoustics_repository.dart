@@ -15,28 +15,21 @@ class AcousticsRepository {
   final TimeSeriesGeneratorApi _generatorApi;
 
   /// Get a stream of time series data
-  Stream<BatchedData> getCombinedTone() {
-    print('get combined Tone');
-    return _generatorApi.subscribe();
+  Stream<BatchedData> getCombinedTone(TimeSeriesConfig config) {
+    print('subscribe in repo');
+    return _generatorApi.subscribeInApp(config);
   }
 
   /// publish tones for the generator
 
-  Future<void> setTones() async {
-    final publishRequest = TimeSeriesConfig()
-      ..sampleRate = 44100
-      ..tones.addAll([
-        ToneConfig(initialPhase: 0, amplitude: 1, frequency: 440),
-        ToneConfig(initialPhase: 0, amplitude: 0.5, frequency: 880),
-        ToneConfig(initialPhase: 0, amplitude: 0.25, frequency: 1320),
-      ]);
-    final response = await _generatorApi.publish(publishRequest);
+  Future<void> setTones(TimeSeriesConfig config) async {
+    final response = await _generatorApi.publish(config);
 
-    print(response.message);
+    print('response${response.message}');
   }
 
   // just for testing
   Stream<Point> getHeartRateStream() {
-    return _generatorApi.generateHeartRateStream(70, 200);
+    return _generatorApi.generateHeartRateStream(70, 20000);
   }
 }

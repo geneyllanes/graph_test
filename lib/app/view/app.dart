@@ -32,7 +32,12 @@ class AppView extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
         home: Scaffold(
-      body: HeartRate(),
+      body: Column(
+        children: [
+          ToneOverview(),
+          HeartRate(),
+        ],
+      ),
     ));
   }
 }

@@ -7,6 +7,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:fftea/fftea.dart';
+import 'package:time_series_generator_api/generated/time_series_generator.dart';
 
 part 'heart_rate_event.dart';
 part 'heart_rate_state.dart';
@@ -16,20 +17,22 @@ class HeartRateBloc extends Bloc<HeartRateEvent, HeartRateState> {
     required AcousticsRepository acousticsRepository,
   })  : _acousticsRepository = acousticsRepository,
         super(const HeartRateState()) {
-    on<StartHeartRate>(_onStartHeartRate);
+    on<StartFromGenerator>(_onStartFromGenerator);
     on<StartSTPSD>(_onStartSTPSD);
   }
-  final windowSize = 16;
-  final overlap = 128;
+  final windowSize = 256;
   final samplingRate = 1000.0;
 
   final AcousticsRepository _acousticsRepository;
 
-  Future<void> _onStartHeartRate(
-      StartHeartRate event, Emitter<HeartRateState> emit) async {
-    await emit.forEach<Point>(_acousticsRepository.getHeartRateStream(),
-        onData: (point) {
-      final newData = FlSpot(point.x.toDouble(), point.y.toDouble());
+  Future<void> _onStartFromGenerator(
+      StartFromGenerator event, Emitter<HeartRateState> emit) async {
+    print('here');
+
+    await emit.forEach<BatchedData>(
+        _acousticsRepository.getCombinedTone(event.config), onData: (batch) {
+      final newData = FlSpot(
+          batch.xValues.first.toDouble(), batch.yValues.first.toDouble());
       final updatedList = state.chartData.map((e) => e).toList();
 
       if (updatedList.length > 50) {
@@ -37,7 +40,7 @@ class HeartRateBloc extends Bloc<HeartRateEvent, HeartRateState> {
       }
 
       return state.copyWith(chartData: updatedList..add(newData));
-    }).whenComplete(() => add(StartHeartRate()));
+    });
   }
 
   Future<void> _onStartSTPSD(

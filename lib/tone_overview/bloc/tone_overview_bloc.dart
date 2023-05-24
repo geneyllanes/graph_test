@@ -10,41 +10,37 @@ class ToneOverviewBloc extends Bloc<ToneOverviewEvent, ToneOverviewState> {
   ToneOverviewBloc({
     required AcousticsRepository acousticsRepository,
   })  : _acousticsRepository = acousticsRepository,
-        super(ToneOverviewState(
-            combinedTone: BatchedData(xValues: [], yValues: []))) {
-    on<ToneOverviewSubscriptionRequested>(_onSubscriptionRequested);
+        super(const ToneOverviewState()) {
+    // on<ToneOverviewSubscriptionRequested>(_onSubscriptionRequested);
+    on<ToneAdded>(_onToneAdded);
   }
   final AcousticsRepository _acousticsRepository;
 
-  BatchedData downSample(int targetPoints, BatchedData data) {
-    if (data.xValues.length <= targetPoints) {
-      return data; // No downsampling needed
-    }
+  // Future<void> _onSubscriptionRequested(ToneOverviewSubscriptionRequested event,
+  //     Emitter<ToneOverviewState> emit) async {
+  //   await emit.forEach<BatchedData>(_acousticsRepository.getCombinedTone(),
+  //       onData: (data) {
+  //     final output = downSample(100, data);
 
-    final List<double> downsampledXValues = [];
-    final List<double> downsampledYValues = [];
+  //     return state.copyWith(combinedTone: data);
+  //   });
+  // }
 
-    final double stepSize = data.xValues.length / targetPoints.toDouble();
-    double currentIndex = 0.0;
+  Future<void> _onToneAdded(
+      ToneAdded event, Emitter<ToneOverviewState> emit) async {
+    emit(state.copyWith(status: ToneStatus.loading));
+    final updated = state.tones.map((e) => e).toList()
+      ..add(ToneConfig(
+          amplitude: event.amplitude,
+          frequency: event.frequency,
+          initialPhase: event.phase));
 
-    for (int i = 0; i < targetPoints; i++) {
-      final int index = currentIndex.floor();
-      downsampledXValues.add(data.xValues[index]);
-      downsampledYValues.add(data.yValues[index]);
-      currentIndex += stepSize;
-    }
+    // await _acousticsRepository
+    //     .setTones(TimeSeriesConfig(sampleRate: 100, tones: updated));
 
-    return BatchedData(
-        xValues: downsampledXValues, yValues: downsampledYValues);
-  }
-
-  Future<void> _onSubscriptionRequested(ToneOverviewSubscriptionRequested event,
-      Emitter<ToneOverviewState> emit) async {
-    await emit.forEach<BatchedData>(_acousticsRepository.getCombinedTone(),
-        onData: (data) {
-      final output = downSample(100, data);
-
-      return state.copyWith(combinedTone: data);
-    });
+    emit(state.copyWith(
+        tones: updated,
+        publishRequest: TimeSeriesConfig(sampleRate: 100, tones: updated),
+        status: ToneStatus.success));
   }
 }

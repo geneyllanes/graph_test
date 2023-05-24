@@ -1,21 +1,15 @@
 part of 'tone_overview_bloc.dart';
 
-abstract class ToneOverviewEvent extends Equatable {
-  const ToneOverviewEvent();
-
-  @override
-  List<Object?> get props => [];
-}
+abstract class ToneOverviewEvent {}
 
 class ToneOverviewSubscriptionRequested extends ToneOverviewEvent {}
 
-class StartHeartRate extends ToneOverviewEvent {}
+class ToneAdded extends ToneOverviewEvent {
+  final double amplitude;
+  final double frequency;
+  final double phase;
 
-class HeartRatePoint extends ToneOverviewEvent {
-  final List<int> point;
-
-  const HeartRatePoint(this.point);
-
-  @override
-  List<Object> get props => [point];
+  ToneAdded(this.amplitude, this.frequency, this.phase);
 }
+
+class ToneOverviewPublishRequest extends ToneOverviewEvent {}
