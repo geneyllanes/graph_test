@@ -17,22 +17,90 @@ class HeartRateBloc extends Bloc<HeartRateEvent, HeartRateState> {
     required AcousticsRepository acousticsRepository,
   })  : _acousticsRepository = acousticsRepository,
         super(const HeartRateState()) {
-    on<StartFromGenerator>(_onStartFromGenerator);
+    on<StartHeartRate>(_onStartHeartRate);
+    on<StartSubscribe>(_onStartSubscribe);
+
+    on<StartPublish>(_onStartPublish);
     on<StartSTPSD>(_onStartSTPSD);
   }
-  final windowSize = 256;
-  final samplingRate = 1000.0;
+  final windowSize = 128;
+  // final overlap = 128;
+  final samplingRate = 44100.0;
+  final buffer = Queue<Point>();
 
   final AcousticsRepository _acousticsRepository;
 
-  Future<void> _onStartFromGenerator(
-      StartFromGenerator event, Emitter<HeartRateState> emit) async {
-    print('here');
+  Future<void> _onStartPublish(
+      StartPublish event, Emitter<HeartRateState> emit) async {
+    await _acousticsRepository.setTones(event.config);
 
-    await emit.forEach<BatchedData>(
-        _acousticsRepository.getCombinedTone(event.config), onData: (batch) {
-      final newData = FlSpot(
-          batch.xValues.first.toDouble(), batch.yValues.first.toDouble());
+    await emit.forEach<BatchedData>(_acousticsRepository.getCombinedTone(),
+        onData: (batch) {
+      for (int i = 0; i < batch.yValues.length;) {
+        final updatedList = state.chartData.map((e) => e).toList();
+        if (updatedList.length > 30) {
+          updatedList.removeAt(0);
+        }
+
+        final point = Point(batch.xValues[i], batch.yValues[i]);
+        final newData = FlSpot(point.x, point.y);
+
+        buffer.add(point);
+
+        if (buffer.length >= windowSize) {
+          final stpsdData = <FlSpot>[];
+
+          // Perform FFT on the buffer
+          final spectrum = performFFT(buffer);
+
+          // Compute power spectrum
+          final powerSpectrum = computePowerSpectrum(spectrum);
+
+          // Convert power spectrum to dB scale
+          final powerSpectrumdB = convertToDecibel(powerSpectrum);
+
+          // Generate frequency axis
+          final frequencyAxis = generateFrequencyAxis(windowSize, samplingRate);
+
+          // Create FlSpot objects for plotting
+          for (int i = 0; i < frequencyAxis.length; i++) {
+            stpsdData.add(FlSpot(frequencyAxis[i], powerSpectrumdB[i]));
+          }
+
+          buffer.clear(); // Clear the buffer after computing the FFT
+
+          // Update the state or perform any further processing
+          return state.copyWith(stpsdData: stpsdData);
+        }
+
+        return state.copyWith(chartData: updatedList..add(newData));
+      }
+
+      return state;
+    });
+  }
+
+  Future<void> _onStartSubscribe(
+      StartSubscribe event, Emitter<HeartRateState> emit) async {
+    await emit.forEach<BatchedData>(_acousticsRepository.getCombinedTone(),
+        onData: (batch) {
+      print(batch.xValues.first);
+      // final newData = FlSpot(point.x.toDouble(), point.y.toDouble());
+      // final updatedList = state.chartData.map((e) => e).toList();
+
+      // if (updatedList.length > 50) {
+      //   updatedList.removeAt(0);
+      // }
+
+      return state;
+    });
+  }
+
+  Future<void> _onStartHeartRate(
+      StartHeartRate event, Emitter<HeartRateState> emit) async {
+    await emit.forEach<Point>(_acousticsRepository.getHeartRateStream(),
+        onData: (point) {
+      final newData = FlSpot(point.x.toDouble(), point.y.toDouble());
       final updatedList = state.chartData.map((e) => e).toList();
 
       if (updatedList.length > 50) {
@@ -40,7 +108,7 @@ class HeartRateBloc extends Bloc<HeartRateEvent, HeartRateState> {
       }
 
       return state.copyWith(chartData: updatedList..add(newData));
-    });
+    }).whenComplete(() => add(StartHeartRate()));
   }
 
   Future<void> _onStartSTPSD(

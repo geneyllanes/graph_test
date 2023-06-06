@@ -15,15 +15,17 @@ class AcousticsRepository {
   final TimeSeriesGeneratorApi _generatorApi;
 
   /// Get a stream of time series data
-  Stream<BatchedData> getCombinedTone(TimeSeriesConfig config) {
+  Stream<BatchedData> getCombinedTone() {
     print('subscribe in repo');
-    return _generatorApi.subscribeInApp(config);
+    return _generatorApi.subscribe();
   }
 
   /// publish tones for the generator
 
-  Future<void> setTones(TimeSeriesConfig config) async {
-    final response = await _generatorApi.publish(config);
+  Future<void> setTones(TimeSeriesConfig publishRequest) async {
+    print('publish request in repo');
+
+    final response = await _generatorApi.publish(publishRequest);
 
     print('response${response.message}');
   }

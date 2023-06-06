@@ -11,21 +11,17 @@ import 'app/app.dart';
 void main() {
   grpc.ClientChannel? channel;
   TimeSeriesGeneratorClient? client;
-  TimeSeriesGeneratorBloc? generatorBloc;
   TimeSeriesGeneratorApi? generatorApi;
   AcousticsRepository? acousticsRepository;
 
-  channel = grpc.ClientChannel('192.168.0.100',
+  channel = grpc.ClientChannel('192.168.124.18',
       port: 8080,
       options: const grpc.ChannelOptions(
           credentials: grpc.ChannelCredentials.insecure()));
 
   client = TimeSeriesGeneratorClient(channel);
 
-  generatorBloc = TimeSeriesGeneratorBloc();
-
-  generatorApi =
-      TimeSeriesGeneratorApi(client: client, generatorBloc: generatorBloc);
+  generatorApi = TimeSeriesGeneratorApi(client: client);
   acousticsRepository = AcousticsRepository(generatorApi: generatorApi);
 
   Bloc.observer = const AppBlocObserver();

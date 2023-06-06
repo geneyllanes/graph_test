@@ -11,57 +11,51 @@ class HeartRate extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      lazy: false,
-      create: (context) => HeartRateBloc(
-        acousticsRepository: context.read<AcousticsRepository>(),
-      ),
-      child: SafeArea(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DefaultTextStyle.merge(
+    return SafeArea(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DefaultTextStyle.merge(
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+              ),
+              child: const Text('Combined Tone'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey, // Border color
+                    width: 2.0, // Border width
+                  ),
+                ),
+                child: const HeartRateView()),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: DefaultTextStyle.merge(
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
-                child: const Text('Combined Tone'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey, // Border color
-                      width: 2.0, // Border width
-                    ),
+                child: const Text('Short-time PSD')),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Container(
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: Colors.grey, // Border color
+                    width: 2.0, // Border width
                   ),
-                  child: const HeartRateView()),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: DefaultTextStyle.merge(
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  child: const Text('Short-time PSD')),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.grey, // Border color
-                      width: 2.0, // Border width
-                    ),
-                  ),
-                  child: const STPSDView()),
-            ),
-          ],
-        ),
+                ),
+                child: const STPSDView()),
+          ),
+        ],
       ),
     );
   }
@@ -99,8 +93,8 @@ class HeartRateView extends StatelessWidget {
                 maxY = maxY + 10;
                 return LineChart(
                   LineChartData(
-                    minY: data.isNotEmpty ? minY : 0,
-                    maxY: data.isNotEmpty ? maxY : 0,
+                    minY: -10,
+                    maxY: 10,
                     minX: data.isNotEmpty ? data.first.x : 0,
                     maxX: data.isNotEmpty ? data.last.x : 0,
                     lineTouchData: LineTouchData(enabled: false),
@@ -145,14 +139,8 @@ class STPSDView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ElevatedButton(
-          onPressed: () {
-            context.read<HeartRateBloc>().add(StartSTPSD());
-          },
-          child: const Text('calculate stpsd'),
-        ),
-        AspectRatio(
-          aspectRatio: 2,
+        SizedBox(
+          height: 200,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: BlocBuilder<HeartRateBloc, HeartRateState>(

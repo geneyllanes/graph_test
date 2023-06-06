@@ -40,7 +40,7 @@ class ToneOverviewBloc extends Bloc<ToneOverviewEvent, ToneOverviewState> {
 
     emit(state.copyWith(
         tones: updated,
-        publishRequest: TimeSeriesConfig(sampleRate: 100, tones: updated),
+        publishRequest: TimeSeriesConfig(sampleRate: 44100, tones: updated),
         status: ToneStatus.success));
   }
 }

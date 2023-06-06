@@ -20,7 +20,21 @@ class App extends StatelessWidget {
       providers: [
         RepositoryProvider.value(value: _acousticsRepository),
       ],
-      child: const AppView(),
+      child: const AppProvider(),
+    );
+  }
+}
+
+class AppProvider extends StatelessWidget {
+  const AppProvider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => HeartRateBloc(
+        acousticsRepository: context.read<AcousticsRepository>(),
+      ),
+      child: AppView(),
     );
   }
 }

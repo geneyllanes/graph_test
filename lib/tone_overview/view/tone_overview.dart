@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:graph_test/heart_rate/bloc/heart_rate_bloc.dart';
 import 'package:graph_test/tone_overview/tone_overview.dart';
 import 'package:time_series_generator_api/generated/time_series_generator.dart';
-import 'package:time_series_generator_api/time_series_generator_api.dart';
 
 class ToneOverview extends StatelessWidget {
   const ToneOverview({super.key});
@@ -35,8 +34,13 @@ class ToneView extends StatelessWidget {
     return BlocListener<ToneOverviewBloc, ToneOverviewState>(
       listener: (context, state) {
         if (state.status == ToneStatus.success) {
-          context.read<HeartRateBloc>().add(StartFromGenerator(
-              TimeSeriesConfig(sampleRate: 100, tones: state.tones)));
+          // figure it out from here
+          // context.read<HeartRateBloc>().add(StartFromGenerator(
+          //     TimeSeriesConfig(sampleRate: 100, tones: state.tones)));
+          print('success');
+          context
+              .read<HeartRateBloc>()
+              .add(StartPublish(state.publishRequest!));
         }
       },
       child: Column(
@@ -45,12 +49,17 @@ class ToneView extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: DefaultTextStyle.merge(
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-              child: const Text('Tone Overview'),
+            child: Column(
+              children: [
+                DefaultTextStyle.merge(
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  child: const Text('Tone Overview'),
+                ),
+                const Text('Sample Rate = 4410')
+              ],
             ),
           ),
           Padding(
@@ -89,17 +98,8 @@ class ToneView extends StatelessWidget {
                   child: TextFormField(
                     controller: phaseFieldController,
                     decoration: InputDecoration(
-                      enabled: !state.status.isLoadingOrSuccess,
+                      // enabled: !state.status.isLoadingOrSuccess,
                       hintText: 'phase',
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: TextFormField(
-                    controller: frequencyFieldController,
-                    decoration: InputDecoration(
-                      enabled: !state.status.isLoadingOrSuccess,
-                      hintText: 'frequency',
                     ),
                   ),
                 ),
@@ -107,8 +107,17 @@ class ToneView extends StatelessWidget {
                   child: TextFormField(
                     controller: amplitudeFieldController,
                     decoration: InputDecoration(
-                      enabled: !state.status.isLoadingOrSuccess,
+                      // enabled: !state.status.isLoadingOrSuccess,
                       hintText: 'amplitude',
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: TextFormField(
+                    controller: frequencyFieldController,
+                    decoration: InputDecoration(
+                      // enabled: !state.status.isLoadingOrSuccess,
+                      hintText: 'frequency',
                       suffixIcon: IconButton(
                         icon: Icon(Icons.send),
                         onPressed: () {

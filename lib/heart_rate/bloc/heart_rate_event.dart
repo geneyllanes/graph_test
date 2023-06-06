@@ -7,13 +7,15 @@ abstract class HeartRateEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class StartFromGenerator extends HeartRateEvent {
+class StartSubscribe extends HeartRateEvent {}
+
+class StartPublish extends HeartRateEvent {
   final TimeSeriesConfig config;
 
-  const StartFromGenerator(this.config);
-  @override
-  List<Object> get props => [config];
+  const StartPublish(this.config);
 }
+
+class StartHeartRate extends HeartRateEvent {}
 
 class StartSTPSD extends HeartRateEvent {}
 
